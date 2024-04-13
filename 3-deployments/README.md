@@ -1,0 +1,1 @@
+A Kubernetes Deployment is a specification for one or more containers that will re-deploy automatically if a pod fails. By default a Deployment doesn’t have persistence. One use of a Deployment would be a Redis server. If you needed persistence with Redis, you could add a Persistent Volume to the Deployment. That is the example we use here.
