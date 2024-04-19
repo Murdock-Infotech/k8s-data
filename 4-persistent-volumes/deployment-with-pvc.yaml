@@ -17,14 +17,29 @@ spec:
         image: redis/redis-stack-server:latest
         ports:
         - containerPort: 6379
+        env:
+        # the below arguments instruct redis to use an append only file for persistence
+        - name: REDIS_ARGS
+          value: "--appendonly yes --save 900 1 --save 30 2"
+        # the mount below is to the redis-storage volume
         volumeMounts:
         - name: redis-storage
-          mountPath: /data/redis
-  volumeClaimTemplates:
-  - metadata:
-      name: redis-storage
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
+          mountPath: /data
+      # the volume below is a reference to the PersistentVolumeClaim called redis-storage
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-storage  # Reference to the PersistentVolumeClaim          
+          
+# A PersistentVolumeClaim is a request for storage by a user. It is similar to a Pod. Pods consume node resources and PVCs consume PV resources.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
